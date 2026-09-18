@@ -1,0 +1,17 @@
+[
+    {
+        "id": "001",
+        "nombre": "Hamburguesa",
+        "precio": 5.0
+    },
+    {
+        "id": "002",
+        "nombre": "Arroz con camaron",
+        "precio": 8.0
+    },
+    {
+        "id": "003",
+        "nombre": "Bebidas",
+        "precio": 3.0
+    }
+]
