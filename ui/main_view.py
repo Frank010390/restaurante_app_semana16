@@ -1,162 +1,153 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from modelos.producto import Producto
 
-class MainView(tk.Frame):
-    def __init__(self, master, servicio, usuario, al_cerrar_sesion):
-        super().__init__(master)
+class MainView:
+    def __init__(self, root, servicio, usuario_actual, callback_cerrar_sesion):
+        self.root = root
         self.servicio = servicio
-        self.usuario = usuario
-        self.al_cerrar_sesion = al_cerrar_sesion
-        self.crear_widgets()
+        self.usuario_actual = usuario_actual
+        self.cerrar_sesion = callback_cerrar_sesion
 
-    def crear_widgets(self):
-        panel_top = tk.Frame(self, bg="#333333")
-        panel_top.pack(fill="x")
+        self.root.title("🍽️ Gestión de Restaurante — Semana 13")
+        self.root.geometry("900x600")
 
-        lbl_info = f"Bienvenido: {self.usuario['username']} ({self.usuario['rol']})"
-        tk.Label(panel_top, text=lbl_info, fg="white", bg="#333333", font=("Arial", 10, "bold")).pack(side="left", padx=10, pady=8)
+        self.cuaderno = ttk.Notebook(root)
+        self.cuaderno.pack(pady=15, padx=15, fill="both", expand=True)
 
-        btn_salir = tk.Button(panel_top, text="Cerrar Sesión", command=self.al_cerrar_sesion, bg="#f44336", fg="white")
-        btn_salir.pack(side="right", padx=10, pady=5)
+        self.frame_usuarios = ttk.Frame(self.cuaderno)
+        self.frame_productos = ttk.Frame(self.cuaderno)
+        self.frame_ventas = ttk.Frame(self.cuaderno)
 
-        notebook = ttk.Notebook(self)
-        notebook.pack(fill="both", expand=True, padx=10, pady=10)
+        self.cuaderno.add(self.frame_usuarios, text="👥 Usuarios")
+        self.cuaderno.add(self.frame_productos, text="📦 Productos")
+        self.cuaderno.add(self.frame_ventas, text="💰 Ventas")
 
-        tab_usuarios = ttk.Frame(notebook)
-        notebook.add(tab_usuarios, text="Usuarios")
-        self.construir_tab_usuarios(tab_usuarios)
-        tab_productos = ttk.Frame(notebook)
-        notebook.add(tab_productos, text="Productos")
-        self.construir_tab_productos(tab_productos)
-
-    def construir_tab_usuarios(self, frame):
-        columnas = ("username", "rol")
-        tree = ttk.Treeview(frame, columns=columnas, show="headings")
-        tree.heading("username", text="Usuario")
-        tree.heading("rol", text="Rol")
-        
-        tree.column("username", width=150)
-        tree.column("rol", width=150)
-
-        usuarios = self.servicio.obtener_usuarios()
-        for u in usuarios:
-            tree.insert("", "end", values=(u["username"], u["rol"]))
-
-        tree.pack(fill="both", expand=True, padx=5, pady=5)
-
-    def mostrar_ventas_pendiente(self, frame):
-        lbl = tk.Label(frame, text="La funcionalidad 'Ventas' está en desarrollo.", font=("Arial", 11))
-        lbl.pack(pady=30)
-            # ====== SEMANA 14: PESTAÑA DE PRODUCTOS ======
-    def construir_tab_productos(self, frame):
-        # Contenedor: Formulario
-        marco_form = ttk.LabelFrame(frame, text="Datos del Producto")
-        marco_form.pack(fill="x", padx=15, pady=8)
-
-        ttk.Label(marco_form, text="ID:").grid(row=0, column=0, padx=8, pady=8, sticky="w")
-        self.ent_id_producto = ttk.Entry(marco_form, width=18)
-        self.ent_id_producto.grid(row=0, column=1, padx=8, pady=8)
-
-        ttk.Label(marco_form, text="Nombre:").grid(row=0, column=2, padx=8, pady=8, sticky="w")
-        self.ent_nombre_prod = ttk.Entry(marco_form, width=30)
-        self.ent_nombre_prod.grid(row=0, column=3, padx=8, pady=8)
-
-        ttk.Label(marco_form, text="Precio:").grid(row=1, column=0, padx=8, pady=8, sticky="w")
-        self.ent_precio_prod = ttk.Entry(marco_form, width=18)
-        self.ent_precio_prod.grid(row=1, column=1, padx=8, pady=8)
-
-        # Contenedor: Botones
-        marco_botones = ttk.LabelFrame(frame, text="Acciones")
-        marco_botones.pack(fill="x", padx=15, pady=8)
-
-        ttk.Button(marco_botones, text="✅ Registrar", command=self.registrar_producto).pack(side="left", padx=6, pady=6)
-        ttk.Button(marco_botones, text="🔍 Cargar", command=self.cargar_producto).pack(side="left", padx=6, pady=6)
-        ttk.Button(marco_botones, text="🔄 Actualizar", command=self.actualizar_producto).pack(side="left", padx=6, pady=6)
-        ttk.Button(marco_botones, text="🗑️ Eliminar", command=self.eliminar_producto).pack(side="left", padx=6, pady=6)
-        ttk.Button(marco_botones, text="🧹 Limpiar", command=self.limpiar_formulario_prod).pack(side="right", padx=6, pady=6)
-
-        # Contenedor: Tabla
-        marco_lista = ttk.LabelFrame(frame, text="Lista de Productos")
-        marco_lista.pack(fill="both", expand=True, padx=15, pady=8)
-
-        columnas = ("id", "nombre", "precio")
-        self.tree_prod = ttk.Treeview(marco_lista, columns=columnas, show="headings", height=6)
-        self.tree_prod.heading("id", text="ID")
-        self.tree_prod.heading("nombre", text="Nombre")
-        self.tree_prod.heading("precio", text="Precio")
-        self.tree_prod.column("id", width=100)
-        self.tree_prod.column("nombre", width=300)
-        self.tree_prod.column("precio", width=120)
-        self.tree_prod.pack(fill="both", expand=True, padx=5, pady=5)
-
-        self.etq_msg_prod = ttk.Label(frame, text="✅ Listo", foreground="green")
-        self.etq_msg_prod.pack(fill="x", padx=15, pady=2)
-
-        self.refrescar_tabla_prod()
-
-    def _leer_form_prod(self):
+        # === Cargar imágenes ===
         try:
-            id_p = self.ent_id_producto.get().strip()
-            nombre = self.ent_nombre_prod.get().strip()
-            precio = float(self.ent_precio_prod.get().strip())
-            return {"id": id_p, "nombre": nombre, "precio": precio} if id_p and nombre and precio > 0 else None
-        except:
-            return None
+            self.icono_app = tk.PhotoImage(file="assets/icons/icono.png")
+            self.root.iconphoto(True, self.icono_app)
 
-    def limpiar_formulario_prod(self):
-        self.ent_id_producto.delete(0, "end")
-        self.ent_nombre_prod.delete(0, "end")
-        self.ent_precio_prod.delete(0, "end")
+            self.logo_app = tk.PhotoImage(file="assets/logo/logo.png")
+            ttk.Label(self.frame_usuarios, image=self.logo_app).pack(pady=10)
+        except Exception as e:
+            print(f"No se pudieron cargar las imágenes: {e}")
+        # === Fin imágenes ===
 
-    def refrescar_tabla_prod(self):
-        for f in self.tree_prod.get_children():
-            self.tree_prod.delete(f)
+        self._construir_usuarios()
+        self._construir_productos()
+        self._construir_ventas()
+        self._actualizar_tabla_usuarios()
+        self._actualizar_tabla_productos()
+        self._recargar_combos()
+        self._actualizar_tabla_ventas()
+
+    def _construir_usuarios(self):
+        ttk.Label(self.frame_usuarios, text=f"Bienvenido: {self.usuario_actual}", font=("Arial", 12, "bold")).pack(pady=15)
+        ttk.Label(self.frame_usuarios, text="Usuarios registrados en el sistema").pack(pady=5)
+        self.tabla_usu = ttk.Treeview(self.frame_usuarios, columns=("usuario",), show="headings", height=10)
+        self.tabla_usu.heading("usuario", text="Nombre de Usuario")
+        self.tabla_usu.column("usuario", width=350)
+        self.tabla_usu.pack(pady=10, padx=20, fill="both", expand=True)
+        ttk.Button(self.frame_usuarios, text="Cerrar Sesión", command=self._salir).pack(pady=10)
+
+    def _actualizar_tabla_usuarios(self):
+        for fila in self.tabla_usu.get_children():
+            self.tabla_usu.delete(fila)
+        for u in self.servicio.listar_usuarios():
+            self.tabla_usu.insert("", "end", values=(u["nombre_usuario"],))
+
+    def _salir(self):
+        if messagebox.askyesno("Cerrar Sesión", "¿Salir a la pantalla de inicio?"):
+            # Limpiamos antes de cerrar para evitar error
+            for widget in self.root.winfo_children():
+                widget.destroy()
+            self.cerrar_sesion()
+
+    def _construir_productos(self):
+        marco_form = ttk.LabelFrame(self.frame_productos, text="Datos del Producto")
+        marco_form.pack(padx=15, pady=10, fill="x")
+        ttk.Label(marco_form, text="ID:").grid(row=0, column=0, padx=5, pady=8, sticky="w")
+        self.entry_id = ttk.Entry(marco_form)
+        self.entry_id.grid(row=0, column=1, padx=5, pady=8)
+        ttk.Label(marco_form, text="Nombre:").grid(row=0, column=2, padx=5, pady=8, sticky="w")
+        self.entry_nombre = ttk.Entry(marco_form)
+        self.entry_nombre.grid(row=0, column=3, padx=5, pady=8)
+        ttk.Label(marco_form, text="Precio ($):").grid(row=1, column=0, padx=5, pady=8, sticky="w")
+        self.entry_precio = ttk.Entry(marco_form)
+        self.entry_precio.grid(row=1, column=1, padx=5, pady=8)
+        ttk.Button(marco_form, text="Registrar", command=self._registrar_producto).grid(row=1, column=2, padx=10, pady=8)
+
+        marco_lista = ttk.LabelFrame(self.frame_productos, text="Listado de Productos")
+        marco_lista.pack(padx=15, pady=10, fill="both", expand=True)
+        self.tabla_prod = ttk.Treeview(marco_lista, columns=("id", "nombre", "precio"), show="headings", height=10)
+        for c in ["id", "nombre", "precio"]:
+            self.tabla_prod.heading(c, text=c.title())
+        self.tabla_prod.pack(fill="both", expand=True)
+
+    def _actualizar_tabla_productos(self):
+        for fila in self.tabla_prod.get_children():
+            self.tabla_prod.delete(fila)
         for p in self.servicio.listar_productos():
-            self.tree_prod.insert("", "end", values=(p["id"], p["nombre"], p["precio"]))
+            self.tabla_prod.insert("", "end", values=(p["id_producto"], p["nombre"], p["precio"]))
 
-    def registrar_producto(self):
-        d = self._leer_form_prod()
-        if not d:
-            self.etq_msg_prod.config(text="⚠️ Datos incompletos", foreground="orange")
+    def _registrar_producto(self):
+        try:
+            prod = Producto(self.entry_id.get().strip(), self.entry_nombre.get().strip(), self.entry_precio.get().strip())
+            if self.servicio.registrar_producto(prod):
+                messagebox.showinfo("✅ Éxito", "Producto registrado")
+                self.entry_id.delete(0, tk.END)
+                self.entry_nombre.delete(0, tk.END)
+                self.entry_precio.delete(0, tk.END)
+                self._actualizar_tabla_productos()
+                self._recargar_combos()
+            else:
+                messagebox.showerror("❌ Error", "El ID ya existe")
+        except Exception as e:
+            messagebox.showerror("Datos incorrectos", str(e))
+
+    def _construir_ventas(self):
+        marco_form = ttk.LabelFrame(self.frame_ventas, text="Seleccionar Datos para la Venta")
+        marco_form.pack(padx=15, pady=10, fill="x")
+        ttk.Label(marco_form, text="Usuario:").grid(row=0, column=0, padx=15, pady=15, sticky="w")
+        self.cmb_usuario = ttk.Combobox(marco_form, state="readonly", width=35)
+        self.cmb_usuario.grid(row=0, column=1, padx=5, pady=15)
+        ttk.Label(marco_form, text="Producto:").grid(row=1, column=0, padx=15, pady=5, sticky="w")
+        self.cmb_producto = ttk.Combobox(marco_form, state="readonly", width=35)
+        self.cmb_producto.grid(row=1, column=1, padx=5, pady=5)
+        ttk.Button(marco_form, text="✅ Registrar Venta", command=self._registrar_venta).grid(row=2, column=1, padx=5, pady=15)
+
+        marco_lista = ttk.LabelFrame(self.frame_ventas, text="Historial de Ventas")
+        marco_lista.pack(padx=15, pady=5, fill="both", expand=True)
+        self.tabla_vent = ttk.Treeview(marco_lista, columns=("id", "usuario", "producto", "fecha"), show="headings", height=10)
+        for c in ["id", "usuario", "producto", "fecha"]:
+            self.tabla_vent.heading(c, text=c.title())
+        self.tabla_vent.pack(fill="both", expand=True)
+
+    def _recargar_combos(self):
+        self.cmb_usuario["values"] = [u["nombre_usuario"] for u in self.servicio.listar_usuarios()]
+        self.cmb_producto["values"] = [p["nombre"] for p in self.servicio.listar_productos()]
+        if self.cmb_usuario["values"]: self.cmb_usuario.current(0)
+        if self.cmb_producto["values"]: self.cmb_producto.current(0)
+
+    def _registrar_venta(self):
+        usuario = self.cmb_usuario.get().strip()
+        producto = self.cmb_producto.get().strip()
+        if not usuario:
+            messagebox.showwarning("Aviso", "Selecciona un usuario")
             return
-        if self.servicio.registrar_producto(d["id"], d["nombre"], d["precio"]):
-            self.etq_msg_prod.config(text="✅ Registrado", foreground="green")
-            self.limpiar_formulario_prod()
-            self.refrescar_tabla_prod()
-        else:
-            self.etq_msg_prod.config(text="❌ No se pudo registrar", foreground="red")
-
-    def cargar_producto(self):
-        id_p = self.ent_id_producto.get().strip()
-        p = self.servicio.buscar_producto(id_p)
-        if p:
-            self.ent_nombre_prod.delete(0, "end")
-            self.ent_nombre_prod.insert(0, p["nombre"])
-            self.ent_precio_prod.delete(0, "end")
-            self.ent_precio_prod.insert(0, str(p["precio"]))
-            self.etq_msg_prod.config(text="✅ Cargado", foreground="green")
-        else:
-            self.etq_msg_prod.config(text="❌ No encontrado", foreground="red")
-
-    def actualizar_producto(self):
-        d = self._leer_form_prod()
-        if not d:
-            self.etq_msg_prod.config(text="⚠️ Completa todos los datos", foreground="orange")
+        if not producto:
+            messagebox.showwarning("Aviso", "Selecciona un producto")
             return
-        if self.servicio.actualizar_producto(d["id"], d["nombre"], d["precio"]):
-            self.etq_msg_prod.config(text="✅ Actualizado", foreground="green")
-            self.limpiar_formulario_prod()
-            self.refrescar_tabla_prod()
+        exito, mensaje = self.servicio.registrar_venta(usuario, producto)
+        if exito:
+            messagebox.showinfo("✅ Venta Registrada", mensaje)
+            self._actualizar_tabla_ventas()
         else:
-            self.etq_msg_prod.config(text="❌ No se pudo actualizar", foreground="red")
+            messagebox.showerror("❌ Error", mensaje)
 
-    def eliminar_producto(self):
-        id_p = self.ent_id_producto.get().strip()
-        if self.servicio.eliminar_producto(id_p):
-            self.etq_msg_prod.config(text="✅ Eliminado", foreground="green")
-            self.limpiar_formulario_prod()
-            self.refrescar_tabla_prod()
-        else:
-            self.etq_msg_prod.config(text="❌ No se pudo eliminar", foreground="red")
-
-     
+    def _actualizar_tabla_ventas(self):
+        for fila in self.tabla_vent.get_children():
+            self.tabla_vent.delete(fila)
+        for v in self.servicio.listar_ventas():
+            self.tabla_vent.insert("", "end", values=(v["id_venta"], v["usuario"], v["producto"], v["fecha"]))

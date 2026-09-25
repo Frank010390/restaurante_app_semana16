@@ -1,70 +1,48 @@
+from modelos.usuario import Usuario
+from modelos.producto import Producto
+from modelos.venta import Venta
 from servicios.archivo_servicio import ArchivoServicio
 
 class RestauranteServicio:
     def __init__(self):
-        self.archivo_usuarios = "usuarios.json"
-        self.inicializar_datos()
+        self.archivo = ArchivoServicio()
 
-    def inicializar_datos(self):
-        usuarios = ArchivoServicio.cargar_json(self.archivo_usuarios)
-        if not usuarios:
-            usuarios_defecto = [
-                {"username": "admin", "password": "123", "rol": "Admin"},
-                {"username": "mesero1", "password": "123", "rol": "Mesero"}
-            ]
-            ArchivoServicio.guardar_json(self.archivo_usuarios, usuarios_defecto)
-
-    def autenticar(self, username, password):
-        usuarios = ArchivoServicio.cargar_json(self.archivo_usuarios)
+    def validar_usuario(self, nombre_usuario, contrasena):
+        usuarios = self.archivo.cargar_json("datos/usuarios.json")
         for u in usuarios:
-            if u["username"] == username and u["password"] == password:
-                return u
-        return None
-
-    def obtener_usuarios(self):
-        return ArchivoServicio.cargar_json(self.archivo_usuarios)
-        # ====== MÉTODOS SEMANA 14: GESTIÓN DE PRODUCTOS ======
-    def listar_productos(self):
-        from servicios.archivo_servicio import ArchivoServicio
-        return ArchivoServicio.cargar_json("datos/productos.json")
-
-    def registrar_producto(self, id_producto, nombre, precio):
-        from servicios.archivo_servicio import ArchivoServicio
-        if not id_producto or not nombre or precio <= 0:
-            return False
-        productos = self.listar_productos()
-        for p in productos:
-            if p.get("id") == id_producto:
-                return False
-        productos.append({"id": id_producto, "nombre": nombre, "precio": precio})
-        ArchivoServicio.guardar_json("datos/productos.json", productos)
-        return True
-
-    def buscar_producto(self, id_producto):
-        productos = self.listar_productos()
-        for p in productos:
-            if p.get("id") == id_producto:
-                return p
-        return None
-
-    def actualizar_producto(self, id_producto, nombre, precio):
-        from servicios.archivo_servicio import ArchivoServicio
-        if not id_producto or not nombre or precio <= 0:
-            return False
-        productos = self.listar_productos()
-        for p in productos:
-            if p.get("id") == id_producto:
-                p["nombre"] = nombre
-                p["precio"] = precio
-                ArchivoServicio.guardar_json("datos/productos.json", productos)
+            if u["nombre_usuario"] == nombre_usuario and u["contrasena"] == contrasena:
                 return True
         return False
 
-    def eliminar_producto(self, id_producto):
-        from servicios.archivo_servicio import ArchivoServicio
+    def listar_usuarios(self):
+        return self.archivo.cargar_json("datos/usuarios.json")
+
+    def registrar_producto(self, producto: Producto):
+        productos = self.archivo.cargar_json("datos/productos.json")
+        if any(p["id_producto"] == producto.id_producto for p in productos):
+            return False
+        productos.append(producto.to_dict())
+        self.archivo.guardar_json("datos/productos.json", productos)
+        return True
+
+    def listar_productos(self):
+        return self.archivo.cargar_json("datos/productos.json")
+
+    def registrar_venta(self, nombre_usuario, nombre_producto):
+        usuarios = self.listar_usuarios()
         productos = self.listar_productos()
-        nueva_lista = [p for p in productos if p.get("id") != id_producto]
-        if len(nueva_lista) < len(productos):
-            ArchivoServicio.guardar_json("datos/productos.json", nueva_lista)
-            return True
-        return False
+        ventas = self.archivo.cargar_json("datos/ventas.json")
+
+        if not any(u["nombre_usuario"] == nombre_usuario for u in usuarios):
+            return False, f"Usuario '{nombre_usuario}' no existe"
+        if not any(p["nombre"] == nombre_producto for p in productos):
+            return False, f"Producto '{nombre_producto}' no existe"
+
+        ultimo_id = max([v["id_venta"] for v in ventas], default=0)
+        venta = Venta(ultimo_id + 1, nombre_usuario, nombre_producto)
+        ventas.append(venta.to_dict())
+        self.archivo.guardar_json("datos/ventas.json", ventas)
+        return True, f"Venta registrada ✅ ID: {ultimo_id + 1}"
+
+    def listar_ventas(self):
+        return self.archivo.cargar_json("datos/ventas.json")

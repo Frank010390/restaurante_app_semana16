@@ -1,9 +1,18 @@
 class Usuario:
-    def _init_(self, username, password, rol):
-        self.username = username
-        self.password = password
-        self.rol = rol
+    def __init__(self, nombre_usuario, contrasena):
+        self._nombre_usuario = nombre_usuario
+        self._contrasena = contrasena
 
-    @classmethod
-    def desde_dict(cls, datos):
-        return cls(datos['username'], datos['password'], datos['rol'])
+    @property
+    def nombre_usuario(self):
+        return self._nombre_usuario
+
+    @property
+    def contrasena(self):
+        return self._contrasena
+
+    def to_dict(self):
+        return {
+            "nombre_usuario": self._nombre_usuario,
+            "contrasena": self._contrasena
+        }

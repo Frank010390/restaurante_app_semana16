@@ -1,0 +1,14 @@
+[
+    {
+        "id_venta": 1,
+        "usuario": "admin",
+        "producto": "Arroz con Pollo",
+        "fecha": "2026-09-25 13:26:51"
+    },
+    {
+        "id_venta": 2,
+        "usuario": "admin",
+        "producto": "Seco de Chivo",
+        "fecha": "2026-09-25 14:45:55"
+    }
+]

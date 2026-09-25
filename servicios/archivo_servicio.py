@@ -2,22 +2,19 @@ import json
 import os
 
 class ArchivoServicio:
-    @staticmethod
-    def cargar_json(nombre_archivo, datos_defecto=None):
-        if datos_defecto is None:
-            datos_defecto = []
-            
-        if not os.path.exists(nombre_archivo):
-            ArchivoServicio.guardar_json(nombre_archivo, datos_defecto)
-            return datos_defecto
-            
-        try:
-            with open(nombre_archivo, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            return datos_defecto
+    def __init__(self):
+        pass
 
-    @staticmethod
-    def guardar_json(nombre_archivo, datos):
-        with open(nombre_archivo, "w", encoding="utf-8") as f:
-            json.dump(datos, f, ensure_ascii=False, indent=4)
+    def cargar_json(self, ruta_archivo):
+        if not os.path.exists(ruta_archivo):
+            return []
+        try:
+            with open(ruta_archivo, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, FileNotFoundError):
+            return []
+
+    def guardar_json(self, ruta_archivo, datos):
+        os.makedirs(os.path.dirname(ruta_archivo), exist_ok=True)
+        with open(ruta_archivo, "w", encoding="utf-8") as f:
+            json.dump(datos, f, indent=4, ensure_ascii=False)

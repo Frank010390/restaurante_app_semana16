@@ -1,10 +1,24 @@
 class Producto:
-    def _init_(self, id_prod, nombre, precio, categoria):
-        self.id = id_prod
-        self.nombre = nombre
-        self.precio = precio
-        self.categoria = categoria
+    def __init__(self, id_producto, nombre, precio):
+        self._id_producto = id_producto
+        self._nombre = nombre
+        self._precio = float(precio)
 
-    @classmethod
-    def desde_dict(cls, datos):
-        return cls(datos['id'], datos['nombre'], datos['precio'], datos['categoria']) 
+    @property
+    def id_producto(self):
+        return self._id_producto
+
+    @property
+    def nombre(self):
+        return self._nombre
+
+    @property
+    def precio(self):
+        return self._precio
+
+    def to_dict(self):
+        return {
+            "id_producto": self._id_producto,
+            "nombre": self._nombre,
+            "precio": self._precio
+        }
