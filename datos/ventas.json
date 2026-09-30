@@ -10,5 +10,17 @@
         "usuario": "admin",
         "producto": "Seco de Chivo",
         "fecha": "2026-09-25 14:45:55"
+    },
+    {
+        "id_venta": 3,
+        "usuario": "empleado1",
+        "producto": "Arroz con Pollo",
+        "fecha": "2026-09-30 16:01:44"
+    },
+    {
+        "id_venta": 4,
+        "usuario": "cliente1",
+        "producto": "Arroz con Pollo",
+        "fecha": "2026-09-30 16:01:51"
     }
 ]

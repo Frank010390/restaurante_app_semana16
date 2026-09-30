@@ -1,6 +1,27 @@
 [
     {
         "nombre_usuario": "admin",
-        "contrasena": "123"
+        "contrasena": "123",
+        "rol": "Administrador"
+    },
+    {
+        "nombre_usuario": "empleado1",
+        "contrasena": "123",
+        "rol": "Empleado"
+    },
+    {
+        "nombre_usuario": "cliente1",
+        "contrasena": "123",
+        "rol": "Cliente"
+    },
+    {
+        "nombre_usuario": "kettzia2",
+        "contrasena": "123",
+        "rol": "Administrador"
+    },
+    {
+        "nombre_usuario": "Yoselin",
+        "contrasena": "123",
+        "rol": "Empleado"
     }
 ]

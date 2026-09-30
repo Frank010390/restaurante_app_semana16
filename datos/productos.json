@@ -18,5 +18,10 @@
         "id_producto": "P004",
         "nombre": "Ceviche de Camarón",
         "precio": 8.5
+    },
+    {
+        "id_producto": "P005",
+        "nombre": "Camaron Apanado",
+        "precio": 9.0
     }
 ]

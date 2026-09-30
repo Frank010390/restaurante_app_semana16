@@ -1,41 +1,48 @@
-# Restaurante App — Semana 15
-**Estudiante:** Frank Marlon Carriel Santos
+# 🍽️ Restaurante App — Semana 16
+**Estudiantes:** Frank Marlon Carriel Santos
 **Asignatura:** Programación Orientada a Objetos
 
 ## 📋 Descripción
-Aplicación de escritorio para la gestión de un restaurante con inicio de sesión, catálogo de productos y registro de ventas.
+Proyecto de gestión de restaurante desarrollado en Python con Tkinter. En la Semana 16 se amplía el sistema con **gestión de usuarios mediante eventos**, incluyendo roles, atajos de teclado y persistencia en JSON.
 
-## 🗂️ Estructura del Proyecto
-Restaurante_app_semana13/
-├── assets/ → Íconos y logotipo ✅
-│ ├── icons/
-│ └── logo/
-├── datos/ → Archivos JSON
-├── modelos/ → Clases Usuario, Producto, Venta
-├── servicios/ → Lógica del sistema
-├── ui/ → Interfaz gráfica
-├── main.py → Programa principal
-└── README.md → Este archivo
+## 📁 Estructura
+restaurante_app/
+├── datos/
+│ ├── usuarios.json
+│ ├── productos.json
+│ └── ventas.json
+├── modelos/
+│ ├── usuario.py
+│ ├── producto.py
+│ └── venta.py
+├── servicios/
+│ ├── archivo_servicio.py
+│ └── restaurante_servicio.py
+├── ui/
+│ ├── login_view.py
+│ └── main_view.py
+├── assets/
+│ ├── icons/icono.png
+│ └── logo/logo.png
+├── main.py
+└── README.md
 
-## 🔐 Credenciales de Acceso
-- **Usuario:** `admin`
-- **Contraseña:** `123`
+## 👤 Gestión de Usuarios y Roles
+- **Administrador** → acceso completo a todas las funciones incluida la gestión de usuarios
+- **Empleado** → puede registrar productos y ventas, NO administra usuarios
+- **Cliente** → visualización y compras
 
-## 🍽️ Productos del Menú
-| ID | Nombre | Precio |
+## ⚡ Eventos implementados
+| Evento | Mecanismo | Acción |
 |---|---|---|
-| P001 | Arroz con Pollo | $7.50 |
-| P002 | Seco de Chivo | $9.00 |
-| P003 | Encebollado | $5.00 |
-| P004 | Ceviche de Camarón | $8.50 |
+| `<<TreeviewSelect>>` | `bind()` | Carga datos del usuario seleccionado en el formulario |
+| `<Return>` (Enter) | `bind()` | Ejecuta el registro del usuario |
+| `<Escape>` (Esc) | `bind()` | Limpia formulario y deselecciona fila |
+| `<<ComboboxSelected>>` | `bind()` | Detecta cambio de rol seleccionado |
+| Botones | `command=` | Registrar, Actualizar, Eliminar, Limpiar |
 
-## ✅ Funcionalidades Implementadas
-- Inicio y cierre de sesión
-- Selección de usuario y producto para registrar venta
-- Botón "Registrar Venta" con `command=` y callback
-- Persistencia automática en `ventas.json`
-- Carpeta `assets/` con recursos visuales ✅
-
-## 🚀 Cómo Ejecutar
+## 🚀 Cómo ejecutar
+1. Abre la carpeta del proyecto
+2. Ejecuta:
 ```bash
 python main.py

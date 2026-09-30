@@ -1,18 +1,12 @@
 class Usuario:
-    def __init__(self, nombre_usuario, contrasena):
-        self._nombre_usuario = nombre_usuario
-        self._contrasena = contrasena
-
-    @property
-    def nombre_usuario(self):
-        return self._nombre_usuario
-
-    @property
-    def contrasena(self):
-        return self._contrasena
+    def __init__(self, nombre_usuario, contrasena, rol="Empleado"):
+        self.nombre_usuario = nombre_usuario
+        self.contrasena = contrasena
+        self.rol = rol  # Administrador, Empleado, Cliente
 
     def to_dict(self):
         return {
-            "nombre_usuario": self._nombre_usuario,
-            "contrasena": self._contrasena
+            "nombre_usuario": self.nombre_usuario,
+            "contrasena": self.contrasena,
+            "rol": self.rol
         }
